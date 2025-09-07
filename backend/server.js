@@ -3,6 +3,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import UserRoutes from "./routes/UserRoutes.js";
+import ItemRoutes from "./routes/ItemRoutes.js";
+import CartRoutes from "./routes/CartRoutes.js";
+
+
 const app = express();
 dotenv.config();
 
@@ -13,6 +17,8 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 app.use('/api/auth',UserRoutes);
+app.use('/api/items',ItemRoutes);
+app.use('/api/cart',CartRoutes);
 
 app.get("/",(req,res)=>{
     res.send("Backend running now !");
