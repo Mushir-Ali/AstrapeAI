@@ -17,7 +17,7 @@ const Form = () => {
     setLoading(true);
 
     try {
-      const BASE_URL = "http://localhost:4000";
+      const BASE_URL = "https://astrapeai.onrender.com";
       let response;
 
       if (isSignUp) {

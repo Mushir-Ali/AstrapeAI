@@ -21,7 +21,7 @@ const Cart = () => {
         return;
       }
 
-      const response = await axios.get("http://localhost:4000/api/cart/get", {
+      const response = await axios.get("https://astrapeai.onrender.com/api/cart/get", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -49,14 +49,14 @@ const Cart = () => {
     try {
       if (newQuantity < 1) {
         // Remove item if quantity goes to 0
-        await axios.delete(`http://localhost:4000/api/cart/remove/${itemId}`, {
+        await axios.delete(`https://astrapeai.onrender.com/api/cart/remove/${itemId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Item removed from cart");
       } else {
         // Update quantity
         await axios.patch(
-          "http://localhost:4000/api/cart/update",
+          "https://astrapeai.onrender.com/api/cart/update",
           { itemId, quantity: newQuantity },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -73,7 +73,7 @@ const Cart = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete("http://localhost:4000/api/cart/delete", {
+      await axios.delete("https://astrapeai.onrender.com/api/cart/delete", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCartItems([]);

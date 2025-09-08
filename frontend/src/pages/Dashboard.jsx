@@ -62,7 +62,7 @@ const Dashboard = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const response = await axios.get("http://localhost:4000/api/items/get", {
+      const response = await axios.get("https://astrapeai.onrender.com/api/items/get", {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           page,
@@ -122,7 +122,7 @@ const handleAddItem = async () => {
     const token = localStorage.getItem("token");
 
     if (editingItemId) {
-      await axios.put(`http://localhost:4000/api/items/${editingItemId}`, formData, {
+      await axios.put(`https://astrapeai.onrender.com/api/items/${editingItemId}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -131,7 +131,7 @@ const handleAddItem = async () => {
       toast.success("Item updated successfully!");
     } else {
       // Add new item
-      await axios.post("http://localhost:4000/api/items/create", formData, {
+      await axios.post("https://astrapeai.onrender.com/api/items/create", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -189,7 +189,7 @@ const handleUpdateItem = async () => {
     const token = localStorage.getItem("token");
 
     const response = await axios.put(
-      `http://localhost:4000/api/items/update/${editingItemId}`,
+      `https://astrapeai.onrender.com/api/items/update/${editingItemId}`,
       formData,
       {
         headers: {
@@ -231,7 +231,7 @@ const handleAddToCart = async (item) => {
     }
 
     const response = await axios.post(
-      "http://localhost:4000/api/cart/add",
+      "https://astrapeai.onrender.com/api/cart/add",
       { itemId: item._id, quantity: 1 },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -260,7 +260,7 @@ const handleDeleteItem = async (itemId) => {
       return;
     }
 
-    const response = await axios.delete(`http://localhost:4000/api/items/delete/${itemId}`, {
+    const response = await axios.delete(`https://astrapeai.onrender.com/api/items/delete/${itemId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
