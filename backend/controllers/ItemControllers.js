@@ -58,13 +58,30 @@ export const getItem = async (req, res) => {
 // read all
 export const getItems = async (req, res) => {
   try {
-    const items = await Item.find();
-    res.status(200).json(items);
-  }catch(error){
+    // get page & limit from query, with defaults
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    // get items with pagination
+    const items = await Item.find().skip(skip).limit(limit);
+
+    // get total count for frontend (to calculate total pages)
+    const total = await Item.countDocuments();
+
+    res.status(200).json({
+      items,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (error) {
     console.error("Error fetching items:", error);
     res.status(500).json({ message: "Server error while fetching items" });
   }
 };
+
 
 // update
 export const updateItem = async (req, res) => {

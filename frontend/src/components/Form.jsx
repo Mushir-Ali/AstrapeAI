@@ -30,7 +30,9 @@ const Form = () => {
         });
       }
 
-      const { user } = response.data;
+      const { token, user } = response.data;
+
+      localStorage.setItem("token", token);
 
       toast.success(`Welcome ${user.name}!`, {
         duration: 2000,
@@ -40,6 +42,8 @@ const Form = () => {
       setName("");
       setEmail("");
       setPassword("");
+      // then navigate
+      // navigate("/dashboard",{state:{user}});
     } catch (err) {
       toast.error(err.response?.data?.message || "Something went wrong", {
         duration: 2000,
