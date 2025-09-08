@@ -1,5 +1,5 @@
 import Cart from "../models/Cart.js";
-
+import Item from "../models/Item.js";
 //  5 functions
 
 // get cart
@@ -7,15 +7,17 @@ export const getCart = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const cart = await Cart.findOne({ userId }).populate("items.itemId");
+    const cart = await Cart.findOne({ userId }).populate("items.itemId", "name price imageUrl category");
 
     if (!cart) return res.status(200).json({ items: [] });
 
-    res.status(200).json(cart);
+    res.status(200).json({ items: cart.items });
   } catch (err) {
+    console.error("Get cart error:", err);
     res.status(500).json({ message: "Error fetching cart", error: err.message });
   }
 };
+
 
 // add to cart
 export const addToCart = async(req,res)=>{

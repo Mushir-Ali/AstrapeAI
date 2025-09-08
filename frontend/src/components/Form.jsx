@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 const Form = () => {
+  const navigate = useNavigate();
+
   const [isSignUp, setIsSignUp] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -33,17 +36,14 @@ const Form = () => {
       const { token, user } = response.data;
 
       localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
       toast.success(`Welcome ${user.name}!`, {
         duration: 2000,
       });
 
-      // clear fields after success
-      setName("");
-      setEmail("");
-      setPassword("");
-      // then navigate
-      // navigate("/dashboard",{state:{user}});
+      console.log("navigating to dashboard");
+      navigate("/dashboard",{state:{user}});
     } catch (err) {
       toast.error(err.response?.data?.message || "Something went wrong", {
         duration: 2000,

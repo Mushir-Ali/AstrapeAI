@@ -19,7 +19,7 @@ export const createItem = async (req,res)=>{
     const newItem = new Item({name,description,price,category,imageUrl,});
 
     const savedItem = await newItem.save();
-
+    console.log("item added succesfully", savedItem);
     return res.status(201).json({
       message: "Item created successfully",
       item: savedItem,
@@ -58,17 +58,34 @@ export const getItem = async (req, res) => {
 // read all
 export const getItems = async (req, res) => {
   try {
-    // get page & limit from query, with defaults
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-
     const skip = (page - 1) * limit;
 
-    // get items with pagination
-    const items = await Item.find().skip(skip).limit(limit);
+    const { category, minRate, maxRate } = req.query;
 
-    // get total count for frontend (to calculate total pages)
-    const total = await Item.countDocuments();
+    let query = {};
+
+    // Category filter
+    if (category && category !== "ALL") {
+      query.category = category;
+    }
+
+    // Price filter (was rate before)
+    const min = Number(minRate);
+    const max = Number(maxRate);
+
+    if (!isNaN(min) || !isNaN(max)) {
+      query.price = {};
+      if (!isNaN(min)) query.price.$gte = min;
+      if (!isNaN(max)) query.price.$lte = max;
+    }
+
+    console.log("MongoDB query object:", query);
+
+    // Fetch items with pagination
+    const items = await Item.find(query).skip(skip).limit(limit);
+    const total = await Item.countDocuments(query);
 
     res.status(200).json({
       items,
