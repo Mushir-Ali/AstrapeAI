@@ -1,15 +1,24 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-// import './App.css'
+import { Toaster } from "react-hot-toast";
+import { Routes, Route } from "react-router-dom";
+import LandingPage from './pages/LandingPage';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <h1 className="text-4xl font-bold text-blue-600">
-      Hello frontend
-    </h1>
+    <>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+      </Routes>
+
+      {/* Toast center mein aana chahiye */}
+      <Toaster
+        position="top-center" // default options: top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
+        toastOptions={{
+          style: {
+            transform: "translateY(50vh)", // move toast to vertical center
+          },
+        }}
+      />
+    </>
   )
 }
 
