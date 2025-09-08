@@ -19,7 +19,7 @@ export const createItem = async (req,res)=>{
     const newItem = new Item({name,description,price,category,imageUrl,});
 
     const savedItem = await newItem.save();
-    console.log("item added succesfully", savedItem);
+    // console.log("item added succesfully", savedItem);
     return res.status(201).json({
       message: "Item created successfully",
       item: savedItem,
