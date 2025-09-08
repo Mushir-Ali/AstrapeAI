@@ -25,7 +25,11 @@ const Cart = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setCartItems(response.data.items || []);
+      const validItems = (response.data.items || []).filter(
+        (cartItem) => cartItem.itemId !== null
+      );
+
+      setCartItems(validItems);
     } catch (err) {
       console.error("Fetch cart error:", err);
       toast.error("Error loading cart");
@@ -39,17 +43,28 @@ const Cart = () => {
   }, []);
 
   const updateQuantity = async (itemId, newQuantity) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
     try {
-      const token = localStorage.getItem("token");
-      await axios.patch(
-        "http://localhost:4000/api/cart/update",
-        { itemId, quantity: newQuantity },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      if (newQuantity < 1) {
+        // Remove item if quantity goes to 0
+        await axios.delete(`http://localhost:4000/api/cart/remove/${itemId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("Item removed from cart");
+      } else {
+        // Update quantity
+        await axios.patch(
+          "http://localhost:4000/api/cart/update",
+          { itemId, quantity: newQuantity },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
       fetchCart();
     } catch (err) {
       console.error("Update cart error:", err);
-      toast.error("Failed to update quantity");
+      toast.error("Failed to update cart");
     }
   };
 
@@ -69,6 +84,11 @@ const Cart = () => {
     }
   };
 
+  const total = cartItems.reduce(
+    (acc, item) => acc + ((item.itemId?.price || 0) * (item.quantity || 0)),
+    0
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
 
@@ -77,7 +97,6 @@ const Cart = () => {
           <h1 className="text-3xl font-bold text-gray-800">🛒 Your Cart</h1>
 
           <div className="flex gap-3">
-            {/* Back Button */}
             <button
               onClick={() => navigate("/dashboard")}
               className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg"
@@ -85,7 +104,6 @@ const Cart = () => {
               ← Back
             </button>
 
-            {/* Delete Cart Button */}
             <button
               onClick={handleClearCart}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg"
@@ -101,59 +119,56 @@ const Cart = () => {
           <p className="text-gray-500">Your cart is empty</p>
         ) : (
           <div className="space-y-4">
-            {cartItems.map((cartItem) => (
-              <div
-                key={cartItem._id}
-                className="flex items-center justify-between bg-white p-4 rounded-lg shadow"
-              >
-                <div className="flex items-center gap-4">
-                  {cartItem.itemId?.imageUrl && (
-                    <img
-                      src={cartItem.itemId.imageUrl}
-                      alt={cartItem.itemId.name}
-                      className="w-20 h-20 object-cover rounded-md"
-                    />
-                  )}
-                  <div>
-                    <h2 className="text-lg font-semibold">
-                      {cartItem.itemId?.name}
-                    </h2>
-                    <p className="text-gray-600">
-                      ${cartItem.itemId?.price} × {cartItem.quantity}
-                    </p>
+            {cartItems.map((cartItem) => {
+              const item = cartItem.itemId;
+              if (!item) return null;
+
+              return (
+                <div
+                  key={cartItem._id}
+                  className="flex items-center justify-between bg-white p-4 rounded-lg shadow"
+                >
+                  <div className="flex items-center gap-4">
+                    {item.imageUrl && (
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="w-20 h-20 object-cover rounded-md"
+                      />
+                    )}
+                    <div>
+                      <h2 className="text-lg font-semibold">{item.name}</h2>
+                      <p className="text-gray-600">
+                        ${item.price} × {cartItem.quantity}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() =>
+                        updateQuantity(item._id, cartItem.quantity - 1)
+                      }
+                      className="px-3 py-1 bg-gray-300 hover:bg-gray-400 rounded-lg"
+                    >
+                      -
+                    </button>
+                    <span className="px-4">{cartItem.quantity}</span>
+                    <button
+                      onClick={() =>
+                        updateQuantity(item._id, cartItem.quantity + 1)
+                      }
+                      className="px-3 py-1 bg-gray-300 hover:bg-gray-400 rounded-lg"
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
+              );
+            })}
 
-                {/* Quantity Controls */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() =>
-                      updateQuantity(cartItem.itemId._id, cartItem.quantity - 1)
-                    }
-                    className="px-3 py-1 bg-gray-300 hover:bg-gray-400 rounded-lg"
-                  >
-                    -
-                  </button>
-                  <span className="px-4">{cartItem.quantity}</span>
-                  <button
-                    onClick={() =>
-                      updateQuantity(cartItem.itemId._id, cartItem.quantity + 1)
-                    }
-                    className="px-3 py-1 bg-gray-300 hover:bg-gray-400 rounded-lg"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            ))}
-
-            {/* Cart total */}
             <div className="text-right font-bold text-xl mt-6">
-              Total: $
-              {cartItems.reduce(
-                (acc, item) => acc + item.itemId.price * item.quantity,
-                0
-              )}
+              Total: ${total}
             </div>
           </div>
         )}

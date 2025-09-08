@@ -42,7 +42,7 @@ const Form = () => {
         duration: 2000,
       });
 
-      console.log("navigating to dashboard");
+      // console.log("navigating to dashboard");
       navigate("/dashboard",{state:{user}});
     } catch (err) {
       toast.error(err.response?.data?.message || "Something went wrong", {

@@ -160,7 +160,8 @@ const handleAddItem = async () => {
 };
 
 
-const handleEditItem = (item) => {
+
+const handleStartEditItem = (item) => {
   setEditingItemId(item._id);
   setNewItemName(item.name);
   setNewItemDesc(item.description);
@@ -170,6 +171,55 @@ const handleEditItem = (item) => {
   setNewItemImage(null);
   setShowAddModal(true);
 };
+
+const handleUpdateItem = async () => {
+  if (!editingItemId) return;
+
+  try {
+    setAddingItem(true);
+
+    const formData = new FormData();
+    formData.append("name", newItemName);
+    formData.append("description", newItemDesc);
+    formData.append("category", newItemCategory);
+    formData.append("price", newItemPrice);
+
+    if (newItemImage) formData.append("image", newItemImage);
+
+    const token = localStorage.getItem("token");
+
+    const response = await axios.put(
+      `http://localhost:4000/api/items/update/${editingItemId}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    toast.success("Item updated successfully!");
+    fetchItems();
+
+    // Reset modal
+    setShowAddModal(false);
+    setNewItemName("");
+    setNewItemDesc("");
+    setNewItemCategory("ALL");
+    setNewItemPrice("");
+    setNewItemImage(null);
+    setImagePreview(null);
+    setEditingItemId(null);
+  } catch (err) {
+    console.error("Error updating item:", err.response?.data || err.message);
+    toast.error("Failed to update item");
+  } finally {
+    setAddingItem(false);
+  }
+};
+
+
 
 
 const handleAddToCart = async (item) => {
@@ -312,14 +362,14 @@ const handleDeleteItem = async (itemId) => {
                 Cancel
               </button>
               <button
-                onClick={handleAddItem}
+                onClick={editingItemId ? handleUpdateItem : handleAddItem} // Calls update or add
                 disabled={addingItem}
                 className={`px-4 py-2 rounded-lg text-white ${
                     addingItem ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
                 }`}
-                >
-                {addingItem ? "Loading..." : "Add Item"}
-                </button>
+              >
+                {addingItem ? "Loading..." : editingItemId ? "Update Item" : "Add Item"}
+              </button>
             </div>
           </div>
         </div>
@@ -414,11 +464,12 @@ const handleDeleteItem = async (itemId) => {
                   {user?.role === "admin" && (
                     <div className="flex gap-2 mt-3">
                       <button
-                        onClick={() => handleEditItem(item)}
+                        onClick={() => handleStartEditItem(item)}
                         className="px-3 py-1 bg-blue-400 hover:bg-yellow-500 text-white rounded-lg shadow"
                       >
                         Edit
                       </button>
+
                       <button
                         onClick={() => handleDeleteItem(item._id)}
                         className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow"

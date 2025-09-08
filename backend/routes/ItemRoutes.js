@@ -8,7 +8,7 @@ import { createItem,getItem,getItems,updateItem,deleteItem } from "../controller
 router.post("/create",protect,isAdmin,upload.single("image"),createItem);
 router.get("/get/:id",protect,getItem);
 router.get("/get",protect,getItems);
-router.put("/update/:id",protect,isAdmin,updateItem);
+router.put("/update/:id",protect,isAdmin,upload.single("image"),updateItem);
 router.delete("/delete/:id",protect,isAdmin,deleteItem);
 
 export default router;

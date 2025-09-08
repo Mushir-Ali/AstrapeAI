@@ -35,14 +35,14 @@ export const createItem = async (req,res)=>{
 export const getItem = async (req, res) => {
   try {
     const {id} = req.params;
-    console.log(id);
+    // console.log(id);
 
     if(!id){
       return res.status(400).json({ message: "Invalid item ID" });
     }
 
     const item = await Item.findById(id);
-    console.log(item);
+    // console.log(item);
 
     if(!item){
       return res.status(404).json({ message: "Item not found" });
@@ -120,9 +120,8 @@ export const updateItem = async (req, res) => {
     if(req.file?.path){
       item.imageUrl = req.file.path;
     }
-
+    
     const updatedItem = await item.save();
-
     res.status(200).json({
       message: "Item updated successfully",
       item: updatedItem,
