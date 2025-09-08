@@ -2,6 +2,7 @@ import { Toaster } from "react-hot-toast";
 import { Routes, Route } from "react-router-dom";
 import LandingPage from './pages/LandingPage';
 import Dashboard from "./pages/Dashboard";
+import Cart from "./pages/Cart";
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
 
       {/* Toast center mein aana chahiye */}

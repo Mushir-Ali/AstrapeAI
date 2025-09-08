@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { Edit, Trash2 } from 'lucide-react';
 
 const Dashboard = () => {
+
   const categories = [
     "ALL",
     "Electronics",
@@ -25,7 +26,17 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user: passedUser } = location.state || {};
 
-  const [user, setUser] = useState(passedUser || null);
+  const [user, setUser] = useState(
+    passedUser || JSON.parse(localStorage.getItem("user") || "null")
+  );
+
+  useEffect(() => {
+    if (passedUser) {
+      localStorage.setItem("user", JSON.stringify(passedUser));
+    }
+  }, [passedUser]);
+
+
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -111,7 +122,6 @@ const handleAddItem = async () => {
     const token = localStorage.getItem("token");
 
     if (editingItemId) {
-      // Edit existing item
       await axios.put(`http://localhost:4000/api/items/${editingItemId}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -151,14 +161,14 @@ const handleAddItem = async () => {
 
 
 const handleEditItem = (item) => {
-  setEditingItemId(item._id); // store the item ID
+  setEditingItemId(item._id);
   setNewItemName(item.name);
   setNewItemDesc(item.description);
   setNewItemCategory(item.category);
   setNewItemPrice(item.price);
   setImagePreview(item.imageUrl || null);
-  setNewItemImage(null); // Optional: allow admin to upload a new image
-  setShowAddModal(true); // Open the modal
+  setNewItemImage(null);
+  setShowAddModal(true);
 };
 
 

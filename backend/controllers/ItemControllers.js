@@ -81,8 +81,6 @@ export const getItems = async (req, res) => {
       if (!isNaN(max)) query.price.$lte = max;
     }
 
-    console.log("MongoDB query object:", query);
-
     // Fetch items with pagination
     const items = await Item.find(query).skip(skip).limit(limit);
     const total = await Item.countDocuments(query);
