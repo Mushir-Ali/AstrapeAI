@@ -377,7 +377,7 @@ const handleDeleteItem = async (itemId) => {
 
       <div className="max-w-6xl mx-auto px-6 py-10">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
-          Welcome, <span className="text-blue-600">{user?.name}</span> 👋
+          Welcome, <span className="text-blue-600">{user?.name}</span>
         </h1>
 
         {/* Filters */}
